@@ -1,0 +1,35 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  test:
+    name: Test formula
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Tap local checkout
+        run: brew tap techouse/patholog "$GITHUB_WORKSPACE"
+
+      - name: Style
+        run: brew style techouse/patholog/patholog
+
+      - name: Audit
+        run: brew audit --strict --formula techouse/patholog/patholog
+
+      - name: Install from source
+        run: brew install --build-from-source techouse/patholog/patholog
+
+      - name: Test
+        run: brew test techouse/patholog/patholog
